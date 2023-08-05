@@ -1,0 +1,5 @@
+.{
+  .name = "wren",
+  .version = "0.4.0",
+  .dependencies = .{},
+}
