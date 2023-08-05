@@ -35,7 +35,7 @@ pub fn build(b: *std.Build) void {
     lib.addIncludePath("src/vm");
     lib.addIncludePath("src/optional");
 
-    lib.installHeadersDirectory("src/include", "wren");
+    lib.installHeadersDirectory("src/include", "");
 
     b.installArtifact(lib);
 }
