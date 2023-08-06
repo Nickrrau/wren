@@ -4,12 +4,8 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const shared = b.option(bool, "shared", "Build shared library") orelse false;
-
-    const lib = std.Build.CompileStep.create(b, .{
+    const lib = b.addStaticLibrary(.{
         .name = "wren",
-        .kind = .lib,
-        .linkage = if (shared) .dynamic else .static,
         .target = target,
         .optimize = optimize,
     });
@@ -26,15 +22,13 @@ pub fn build(b: *std.Build) void {
         "src/vm/wren_vm.c",
     };
 
-    lib.addCSourceFiles(&sources, &[_][]const u8{
-        "-O2",
-    });
-
-    lib.linkLibC();
     lib.addIncludePath("src/include");
     lib.addIncludePath("src/vm");
     lib.addIncludePath("src/optional");
-
+    lib.addCSourceFiles(&sources, &[_][]const u8{
+        "-O2",
+    });
+    lib.linkLibC();
     lib.installHeadersDirectory("src/include", "");
 
     b.installArtifact(lib);
