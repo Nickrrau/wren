@@ -28,9 +28,12 @@ pub fn build(b: *std.Build) void {
         "src/vm/wren_vm.c",
     };
 
+    lib.addIncludePath(.{ .path = "src/include" });
+    lib.addIncludePath(.{ .path = "src/vm" });
+    lib.addIncludePath(.{ .path = "src/optional" });
+
     lib.addCSourceFiles(&sources, &[_][]const u8{
         "-O2",
-        "-Iinclude",
     });
 
     b.installArtifact(lib);
