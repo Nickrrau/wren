@@ -4,11 +4,17 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const lib = b.addStaticLibrary(.{
+    const lib = std.Build.CompileStep.create(b, .{
         .name = "wren",
+        .kind = .lib,
+        .linkage = .static,
         .target = target,
         .optimize = optimize,
     });
+
+    lib.linkLibC();
+
+    lib.installHeadersDirectory("src/include", "");
 
     const sources = [_][]const u8{
         "src/optional/wren_opt_random.c",
@@ -22,14 +28,10 @@ pub fn build(b: *std.Build) void {
         "src/vm/wren_vm.c",
     };
 
-    lib.addIncludePath("src/include");
-    lib.addIncludePath("src/vm");
-    lib.addIncludePath("src/optional");
     lib.addCSourceFiles(&sources, &[_][]const u8{
         "-O2",
+        "-Iinclude",
     });
-    lib.linkLibC();
-    lib.installHeadersDirectory("src/include", "");
 
     b.installArtifact(lib);
 }
