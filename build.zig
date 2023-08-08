@@ -38,3 +38,15 @@ pub fn build(b: *std.Build) void {
 
     b.installArtifact(lib);
 }
+
+pub fn addPaths(step: *std.build.CompileStep) void {
+    step.addIncludePath(.{ .path = sdkPath("/src/include") });
+}
+
+fn sdkPath(comptime suffix: []const u8) []const u8 {
+    if (suffix[0] != '/') @compileError("suffix must be an absolute path");
+    return comptime blk: {
+        const root_dir = std.fs.path.dirname(@src().file) orelse ".";
+        break :blk root_dir ++ suffix;
+    };
+}
