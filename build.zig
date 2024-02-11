@@ -4,15 +4,12 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const lib = std.Build.CompileStep.create(b, .{
+    const lib = std.Build.addStaticLibrary(b, .{
         .name = "wren",
-        .kind = .lib,
-        .linkage = .static,
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
-
-    lib.linkLibC();
 
     lib.installHeadersDirectory("src/include", "");
 
@@ -32,15 +29,18 @@ pub fn build(b: *std.Build) void {
     lib.addIncludePath(.{ .path = "src/vm" });
     lib.addIncludePath(.{ .path = "src/optional" });
 
-    lib.addCSourceFiles(&sources, &[_][]const u8{
-        "-O2",
-    });
+    // lib.addCSourceFiles(&sources, &[_][]const u8{
+    //     "-O2",
+    // });
+    lib.addCSourceFiles(.{ .flags = &.{"-O2"}, .files = &sources });
 
     b.installArtifact(lib);
 }
 
 pub fn addPaths(step: *std.build.CompileStep) void {
     step.addIncludePath(.{ .path = sdkPath("/include") });
+    step.addIncludePath(.{ .path = "src/vm" });
+    step.addIncludePath(.{ .path = "src/optional" });
 }
 
 fn sdkPath(comptime suffix: []const u8) []const u8 {
